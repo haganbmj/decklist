@@ -1,17 +1,14 @@
 <template>
   <header class="navbar bg-gray">
-      <section class="navbar-section">
-          <!-- <a href="/"><img class="navbar-icon" src="../android-chrome-192x192.png"></a> -->
-          <a href="https://griselbrand.com">
-            <img class="navbar-icon" src="https://griselbrand.com/android-chrome-192x192.png">
-          </a>
-          <a href="https://griselbrand.com" class="btn btn-link">Griselbrand</a>
-      </section>
-      <!-- <section class="navbar-center"></section> -->
-      <section class="navbar-section hide-sm">
-          <a href="https://twitter.com/haganbmj" target="_blank" class="btn ml-1">Twitter</a>
-          <a href="https://github.com/haganbmj/mtg-proxy-site" target="_blank" class="btn btn-primary ml-1">GitHub</a>
-      </section>
+    <section class="navbar-section">
+      <a href="https://griselbrand.com" class="navbar-brand text-bold mr-2">GRISELBRAND.COM</a>
+      <a href="https://proxy.griselbrand.com" class="btn btn-link">Proxy</a>
+      <a href="https://decklist.griselbrand.com" class="btn btn-link">Decklist</a>
+    </section>
+    <section class="navbar-section hide-sm">
+      <a href="https://twitter.com/haganbmj" target="_blank" class="btn ml-1">Twitter</a>
+      <a href="https://github.com/haganbmj/decklist" target="_blank" class="btn btn-primary ml-1">GitHub</a>
+    </section>
   </header>
   <div id="content" class="container">
     <MainPage/>
@@ -34,6 +31,10 @@ export default {
     padding: .4rem;
 }
 
+.navbar-section.floater {
+    flex-basis: min-content;
+}
+
 .navbar-icon {
     height: 36px;
     width: auto;
@@ -43,7 +44,9 @@ export default {
   margin: 0 auto;
   margin-top: 0.4rem;
   margin-bottom: 4rem;
-  max-width: 900px;
+  padding: 0 1rem;
+  /* max-width: 1400px; */
+  max-width: 1000px;
 }
 
 </style>

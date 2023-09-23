@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "jspdf": "^2.5.1",
+    "lodash.debounce": "^4.0.8",
     "spectre.css": "^0.5.9",
     "vue": "^3.2.32"
   },

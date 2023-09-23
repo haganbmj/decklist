@@ -3,37 +3,6 @@
         <div class="columns">
             <div class="column col-6 col-sm-12">
                 <form class="form-group form-horizontal">
-                    <h4>Configuration</h4>
-                    <div class="form-group">
-                        <label class="form-label col-3 col-sm-12" for="game-select">Game</label>
-                        <div class="col-9 col-sm-12">
-                            <select class="form-select select" id="game-select" v-model="config.game" style="width:100%;">
-                                <option value="magic">Magic: The Gathering</option>
-                                <option value="lorcana">Lorcana</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label col-3 col-sm-12" for="style-select">Style</label>
-                        <div class="col-9 col-sm-12">
-                            <select class="form-select select" id="style-select" v-model="config.style" style="width:100%;">
-                                <option value="dci">DCI</option>
-                                <option value="starcitygames">StarCityGames</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label col-3 col-sm-12" for="style-select">Sorting</label>
-                        <div class="col-9 col-sm-12">
-                            <select class="form-select select" id="sorting-select" v-model="config.sorting" style="width:100%;">
-                                <option value="unsorted">Unsorted</option>
-                                <option value="alphabetical">Alphabetical</option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
-
-                <form class="form-group form-horizontal">
                     <h4>Personal Information</h4>
                     <div class="form-group">
                         <label class="form-label col-3 col-sm-12" for="first-name">First Name</label>
@@ -60,9 +29,7 @@
                         <input class="form-input col-9 col-sm-12" id="event-date" type="date" v-model="input.eventDate" placeholder="Event Date">
                     </div>
                 </form>
-            </div>
 
-            <div class="column col-6 col-sm-12">
                 <form class="form-group form-horizontal">
                     <h4>Deck Information</h4>
                     <div class="form-group">
@@ -76,32 +43,76 @@
                 </form>
 
                 <form class="form-group form-horizontal">
-                    <h4>Main Deck</h4>
+                    <h4>Main Deck <span class="icon-info tooltip" data-tooltip="Use 0 for empty quantity."></span></h4>
                     <div class="form-group">
-                        <!-- <label class="form-label" for="deck-input">Main Deck</label> -->
                         <textarea class="form-input" id="deck-input" rows="7" v-model="input.decklist"
                             placeholder="4 Wild Nacatl&#10;0x Griselbrand&#10;3x Price of Progress&#10;4 Strip Mine (ATQ) 82d&#10;2 Tinker Bell - Giant Fairy&#10;4 Rafiki - Mysterious Sage"></textarea>
                     </div>
 
                     <h4>Sideboard</h4>
                     <div class="form-group">
-                        <!-- <label class="form-label" for="deck-input">Sideboard</label> -->
                         <textarea class="form-input" id="deck-input" rows="7" v-model="input.sideboard"
                             placeholder="// Sideboard&#10;Orim's Chant&#10;3x Rough // Tumble&#10;SB: dead/gone"></textarea>
                     </div>
                 </form>
+            </div>
+
+            <div class="column col-6 col-sm-12">
+                <form class="form-group form-horizontal">
+                    <h4>Configuration</h4>
+                    <div class="form-group">
+                        <label class="form-label col-3 col-sm-12" for="game-select">Game</label>
+                        <div class="col-9 col-sm-12">
+                            <select class="form-select select" id="game-select" v-model="config.game" style="width:100%;">
+                                <option value="magic">Magic: The Gathering</option>
+                                <option value="lorcana">Lorcana</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label col-3 col-sm-12" for="style-select">Style</label>
+                        <div class="col-9 col-sm-12">
+                            <select class="form-select select" id="style-select" v-model="config.style" style="width:100%;">
+                                <option value="wotc">Wizards of the Coast</option>
+                                <!-- <option value="starcitygames">StarCityGames</option> -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label col-3 col-sm-12" for="style-select">Sorting</label>
+                        <div class="col-9 col-sm-12">
+                            <select class="form-select select" id="sorting-select" v-model="config.sorting" style="width:100%;">
+                                <option value="unsorted">Unsorted</option>
+                                <option value="alphabetical">Alphabetical</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
 
                 <form class="form-group btn-group btn-group-block">
-                    <button id="print" class="btn btn-primary" type="button" @click="print()"><span class="icon-print"></span> Print</button>
+                    <button id="save" class="btn btn-block" type="button" @click="save()"><span class="icon-floppy-disk"></span> Save</button>
+                    <button id="print" class="btn btn-primary" type="button" @click="print()"><span class="icon-printer"></span> Print</button>
                 </form>
+
+                <iframe id="decklist-preview" :src="preview" style="width:100%; height:580px;"></iframe>
+            </div>
+
+            <div class="column col-12 pt-2 pb-2">
+                <div class="divider"></div>
+            </div>
+
+            <div class="column col-12">
+                <div class="text-muted text-small text-center">
+                    <p>Last built at {{ getBuildTimestamp() }} from <a :href="'https://github.com/haganbmj/decklist/commit/' + getBuildSha()" target="_blank">{{ getBuildSha() }}</a>.</p>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-// import { normalizeCardName } from '../helpers/CardNames.mjs';
-import { jsPDF } from 'jspdf';
+import debounce from 'lodash.debounce';
+import { render } from '../components/wotc.mjs';
 
 export default {
     name: 'MainPage',
@@ -128,10 +139,26 @@ export default {
             },
             cards: [],
             errors: [],
+            doc: undefined,
+            // preview: '',
+        }
+    },
+    computed: {
+        preview: function() {
+            return this.doc?.output('dataurlstring');
         }
     },
     mounted() {
         this.loadConfig();
+        this.debouncedUpdateDoc = debounce(this.updateDoc, 500);
+    },
+    watch: {
+        input: {
+            handler() {
+                this.debouncedUpdateDoc();
+            },
+            deep: true,
+        }
     },
     methods: {
         storeConfig() {
@@ -143,26 +170,22 @@ export default {
         },
         loadConfig() {
             this.config.game = localStorage.game ?? 'magic';
-            this.config.style = localStorage.style ?? 'dci';
+            this.config.style = localStorage.style ?? 'wotc';
             this.config.sorting = localStorage.sorting ?? 'unsorted';
             this.input.firstName = localStorage.firstName ?? '';
             this.input.lastName = localStorage.lastName ?? '';
         },
+        updateDoc() {
+            this.doc = render(this.input, this.config);
+        },
+        save() {
+            this.doc.save('decklist.pdf');
+        },
         print() {
             this.storeConfig();
-            this.parseCardList();
 
-            const doc = new jsPDF({
-                orientation: 'portrait',
-                unit: 'pt',
-                format: 'letter',
-            });
-
-            doc.setFont('helvetica');
-            // doc.setFontSize(12);
-            // doc.setDrawColor.apply(null, [43, 46, 52]);
-            // doc.setTextColor.apply(null, [0]);
-            // doc.text(`${JSON.stringify(this.cards)}`, 10, 10);
+            // const doc = render(this.input, this.config);
+            // this.preview = doc.output('dataurlstring');
             // doc.save('test.pdf');
         },
         async parseCardList() {
@@ -201,8 +224,14 @@ export default {
             }
 
             this.cards = parsedInput;
-            console.log(JSON.stringify(this.cards));
-        }
+            // console.log(JSON.stringify(this.cards));
+        },
+        getBuildTimestamp() {
+            return document.documentElement.dataset.buildTimestamp;
+        },
+        getBuildSha() {
+            return document.documentElement.dataset.buildSha || 'local';
+        },
     }
 }
 </script>
