@@ -1,4 +1,4 @@
-export function parseDecklist(rawDecklist) {
+export function parseDecklist(rawDecklist, initialDestination = 'mainboard') {
     let response = {
         mainboard: [],
         sideboard: [],
@@ -6,6 +6,10 @@ export function parseDecklist(rawDecklist) {
     }
 
     let destination = response.mainboard;
+
+    if (initialDestination === 'sideboard') {
+        destination = response.sideboard;
+    }
 
     for (let line of rawDecklist.split('\n')) {
         line = line.trim();
@@ -48,7 +52,7 @@ export function parseDecklist(rawDecklist) {
         destination.push({
             quantity: parseInt(quantity),
             name: name.trim(),
-        })
+        });
     }
 
     return response;

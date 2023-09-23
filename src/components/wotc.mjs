@@ -8,7 +8,17 @@ export function render(input, config) {
         format: 'letter',
     });
 
-    const { mainboard, sideboard } = parseDecklist(input.decklist);
+    // FIXME: This is silly. Need a cleaner way to allow sideboard entries in both fields.
+    // FIXME: This should also probably be where I handle merging entries of the same name?
+    let { mainboard, sideboard } = parseDecklist(input.decklist, 'mainboard');
+    let { sideboard: sideboard2 } = parseDecklist(input.sideboard, 'sideboard');
+    sideboard = sideboard.concat(sideboard2);
+
+    // TODO: Move these to some kind of helper function. Add an Enum.
+    if (config.sorting === 'alphabetical') {
+        mainboard = mainboard.sort((a, b) => a.name.localeCompare(b.name)).filter(a => a.name !== '');
+        sideboard = sideboard.sort((a, b) => a.name.localeCompare(b.name)).filter(a => a.name !== '');
+    }
 
     addBoundingBoxes(doc);
     addDecklist(doc, mainboard, sideboard);
@@ -45,9 +55,6 @@ function addBoundingBoxes(doc) {
 }
 
 function addDecklist(doc, mainboard, sideboard) {
-    let mainboardCount = mainboard.reduce((acc, elem) => acc + elem['quantity'], 0);
-    let sideboardCount = sideboard.reduce((acc, elem) => acc + elem['quantity'], 0);
-
     doc.setLineWidth(.5);
 
     // Col 1: Mainboard
@@ -123,8 +130,12 @@ function addDecklist(doc, mainboard, sideboard) {
     doc.text('Total Number of Cards in Main Deck:', 62, 768);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(20);
-    if (mainboardCount !== 0) {
-        doc.text(String(mainboardCount), 250 + 56 / 2, 766, null, null, 'center');
+    // If there are zero quantity lines exclude the count assuming the user intends to write those later.
+    if (!mainboard.some((elem) => elem.quantity === 0 && elem.name !== '')) {
+        let count = mainboard.reduce((acc, elem) => acc + elem['quantity'], 0);
+        if (count !== 0) {
+            doc.text(String(count), 250 + 56 / 2, 766, null, null, 'center');
+        }
     }
 
     // Add the sideboard count
@@ -133,8 +144,12 @@ function addDecklist(doc, mainboard, sideboard) {
     doc.text('Total Number of Cards in Sideboard:', 336, 714);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(20);
-    if (sideboardCount !== 0) {
-        doc.text(String(sideboardCount), 524 + 56 / 2, 712, null, null, 'center');
+    // If there are zero quantity lines exclude the count assuming the user intends to write those later.
+    if (!sideboard.some((elem) => elem.quantity === 0 && elem.name !== '')) {
+        let count = sideboard.reduce((acc, elem) => acc + elem['quantity'], 0);
+        if (count !== 0) {
+            doc.text(String(count), 524 + 56 / 2, 712, null, null, 'center');
+        }
     }
 }
 

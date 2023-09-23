@@ -43,7 +43,7 @@
                 </form>
 
                 <form class="form-group form-horizontal">
-                    <h4>Main Deck <span class="icon-info tooltip" data-tooltip="Use 0 for empty quantity."></span></h4>
+                    <h4>Main Deck <span class="icon-info tooltip" data-tooltip="Use 0 for an empty quantity."></span></h4>
                     <div class="form-group">
                         <textarea class="form-input" id="deck-input" rows="7" v-model="input.decklist"
                             placeholder="4 Wild Nacatl&#10;0x Griselbrand&#10;3x Price of Progress&#10;4 Strip Mine (ATQ) 82d&#10;2 Tinker Bell - Giant Fairy&#10;4 Rafiki - Mysterious Sage"></textarea>
@@ -90,8 +90,8 @@
                 </form>
 
                 <form class="form-group btn-group btn-group-block">
-                    <button id="save" class="btn btn-block" type="button" @click="save()"><span class="icon-floppy-disk"></span> Save</button>
-                    <button id="print" class="btn btn-primary" type="button" @click="print()"><span class="icon-printer"></span> Print</button>
+                    <button id="save" class="btn btn-block btn-primary" type="button" @click="save()"><span class="icon-floppy-disk"></span> Save</button>
+                    <!-- <button id="print" class="btn btn-primary" type="button" @click="print()"><span class="icon-printer"></span> Print</button> -->
                 </form>
 
                 <iframe id="decklist-preview" :src="preview" style="width:100%; height:580px;"></iframe>
@@ -103,7 +103,7 @@
 
             <div class="column col-12">
                 <div class="text-muted text-small text-center">
-                    <p>Last built at {{ getBuildTimestamp() }} from <a :href="'https://github.com/haganbmj/decklist/commit/' + getBuildSha()" target="_blank">{{ getBuildSha() }}</a>.</p>
+                    <p>Built at {{ getBuildTimestamp() }} from <a :href="'https://github.com/haganbmj/decklist/commit/' + getBuildSha()" target="_blank">{{ getBuildSha() }}</a>.</p>
                 </div>
             </div>
         </div>
@@ -140,7 +140,6 @@ export default {
             cards: [],
             errors: [],
             doc: undefined,
-            // preview: '',
         }
     },
     computed: {
@@ -151,9 +150,16 @@ export default {
     mounted() {
         this.loadConfig();
         this.debouncedUpdateDoc = debounce(this.updateDoc, 500);
+        this.debouncedUpdateDoc();
     },
     watch: {
         input: {
+            handler() {
+                this.debouncedUpdateDoc();
+            },
+            deep: true,
+        },
+        config: {
             handler() {
                 this.debouncedUpdateDoc();
             },
@@ -176,55 +182,15 @@ export default {
             this.input.lastName = localStorage.lastName ?? '';
         },
         updateDoc() {
+            this.storeConfig();
             this.doc = render(this.input, this.config);
         },
         save() {
             this.doc.save('decklist.pdf');
         },
         print() {
-            this.storeConfig();
-
-            // const doc = render(this.input, this.config);
-            // this.preview = doc.output('dataurlstring');
-            // doc.save('test.pdf');
-        },
-        async parseCardList() {
-            // this.cards = [];
-            let parsedInput = [];
-
-            for (let line of this.input.decklist.split('\n')) {
-                line = line.trim();
-
-                // Different sites have different sideboard formats.
-                // Look for the word "sideboard" or lines that start with a double slash and skip them.
-                if (/Sideboard/i.test(line) || /^\/\//.test(line) || line === '') {
-                    continue;
-                }
-
-                // Extract the quantity and card name.
-                // Cockatrice prefixes lines with "SB:" for sideboard cards, so optionally matching that.
-                // MTGA's export format puts the set and collector number in the line. ex. Arid Mesa (ZEN) 211
-                let extract = /^(?:SB:\s)?(?:(\d+)?x?\s)?([^(]+)(?:\s\(.+\) .+)?$/i.exec(line);
-                if (extract === null) {
-                    this.errors.push(line);
-                    console.warn(`Failed to parse line: ${line}`);
-                    continue;
-                }
-
-                let [, quantity, name] = extract;
-
-                if (quantity === undefined) {
-                    quantity = 1;
-                }
-
-                parsedInput.push({
-                    quantity: quantity === '0' ? '' : quantity,
-                    name: name.trim(),
-                })
-            }
-
-            this.cards = parsedInput;
-            // console.log(JSON.stringify(this.cards));
+            // Is there a way to throw it to print dialog?
+            // Might be able to invoke a print on the iframe or something.
         },
         getBuildTimestamp() {
             return document.documentElement.dataset.buildTimestamp;
@@ -237,5 +203,8 @@ export default {
 </script>
 
 <style>
-
+.tooltip::after {
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    padding: 0.4rem 0.6rem;
+}
 </style>
