@@ -15,15 +15,8 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import MainPage from './views/MainPage.vue'
-
-export default {
-  name: 'App',
-  components: {
-    MainPage
-  },
-}
 </script>
 
 <style>

@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import { parseDecklist } from "../helpers/ParseMagicDecklist.mjs";
+import dcilogo from './img/dcilogo.jpg';
 
 export function render(input, config) {
     const doc = new jsPDF({
@@ -52,6 +53,8 @@ function addBoundingBoxes(doc) {
     doc.rect(320, 722, 260, 12); // official use + main/sb
     doc.rect(320, 734, 260, 12); // dc round + dc round
     doc.rect(320, 746, 260, 12); // status + status
+
+    doc.addImage(dcilogo, 'JPEG', 27, 54, 90, 32);
 }
 
 function addDecklist(doc, mainboard, sideboard) {

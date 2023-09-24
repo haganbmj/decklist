@@ -109,16 +109,18 @@
 
             <div class="column col-12">
                 <div class="text-muted text-small text-center">
-                    <p>Built at {{ getBuildTimestamp() }} from <a :href="'https://github.com/haganbmj/decklist/commit/' + getBuildSha()" target="_blank">{{ getBuildSha() }}</a>.</p>
+                    <!-- <p>Built at {{ getBuildTimestamp() }} from <a :href="'https://github.com/haganbmj/decklist/commit/' + getBuildSha()" target="_blank">{{ getBuildSha() }}</a>.</p> -->
                 </div>
             </div>
         </div>
     </div>
 </template>
 
-<script>
+<script lang="ts">
+// TODO: Switch to setup scripts.
 import debounce from 'lodash.debounce';
 import { render } from '../components/wotc.mjs';
+import jsPDF from 'jspdf';
 
 export default {
     name: 'MainPage',
@@ -143,9 +145,9 @@ export default {
                 decklist: '',
                 sideboard: '',
             },
-            cards: [],
-            errors: [],
-            doc: undefined,
+            // FIXME: Currently unused as there's no parsing being done on the entries.
+            errors: [] as string[],
+            doc: undefined as jsPDF | undefined,
         }
     },
     computed: {
@@ -192,7 +194,7 @@ export default {
             this.doc = render(this.input, this.config);
         },
         save() {
-            this.doc.save('decklist.pdf');
+            this.doc?.save('decklist.pdf');
         },
         print() {
             // Is there a way to throw it to print dialog?
@@ -208,7 +210,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="postcss">
 .tooltip::after {
     font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
     padding: 0.4rem 0.6rem;
