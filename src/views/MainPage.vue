@@ -3,7 +3,7 @@
         <div class="columns">
             <div class="column col-6 col-sm-12">
                 <form class="form-group form-horizontal">
-                    <h4>Personal Information</h4>
+                    <h5>Personal Information</h5>
                     <div class="form-group">
                         <label class="form-label col-3 col-sm-12" for="first-name">First Name</label>
                         <input class="form-input col-9 col-sm-12" id="first-name" type="text" v-model="input.firstName" placeholder="First Name" autofocus>
@@ -14,8 +14,10 @@
                     </div>
                 </form>
 
+                <div class="divider"></div>
+
                 <form class="form-group form-horizontal">
-                    <h4>Event Information</h4>
+                    <h5>Event Information</h5>
                     <div class="form-group">
                         <label class="form-label col-3 col-sm-12" for="event-name">Event Name</label>
                         <input class="form-input col-9 col-sm-12" id="event-name" type="text" v-model="input.eventName" placeholder="Event Name">
@@ -30,8 +32,10 @@
                     </div>
                 </form>
 
+                <div class="divider"></div>
+
                 <form class="form-group form-horizontal">
-                    <h4>Deck Information</h4>
+                    <h5>Deck Information</h5>
                     <div class="form-group">
                         <label class="form-label col-3 col-sm-12" for="deck-name">Deck Name</label>
                         <input class="form-input col-9 col-sm-12" id="deck-name" type="text" v-model="input.deckName" placeholder="Deck Name">
@@ -42,14 +46,16 @@
                     </div>
                 </form>
 
+                <div class="divider"></div>
+
                 <form class="form-group form-horizontal">
-                    <h4>Main Deck <span class="icon-info tooltip" data-tooltip="Use 0 for an empty quantity."></span></h4>
+                    <h5>Main Deck <span class="icon-info tooltip" data-tooltip="Use 0 for an empty quantity."></span></h5>
                     <div class="form-group">
                         <textarea class="form-input" id="deck-input" rows="7" v-model="input.decklist"
                             placeholder="4 Wild Nacatl&#10;0x Griselbrand&#10;3x Price of Progress&#10;4 Strip Mine (ATQ) 82d&#10;2 Tinker Bell - Giant Fairy&#10;4 Rafiki - Mysterious Sage"></textarea>
                     </div>
 
-                    <h4>Sideboard</h4>
+                    <h5>Sideboard</h5>
                     <div class="form-group">
                         <textarea class="form-input" id="deck-input" rows="7" v-model="input.sideboard"
                             placeholder="// Sideboard&#10;Orim's Chant&#10;3x Rough // Tumble&#10;SB: dead/gone"></textarea>
@@ -59,7 +65,7 @@
 
             <div class="column col-6 col-sm-12">
                 <form class="form-group form-horizontal">
-                    <h4>Configuration</h4>
+                    <h5>Configuration</h5>
                     <div class="form-group">
                         <label class="form-label col-3 col-sm-12" for="game-select">Game</label>
                         <div class="col-9 col-sm-12">
