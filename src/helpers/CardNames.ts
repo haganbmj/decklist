@@ -1,4 +1,4 @@
-export function normalizeCardName(cardName) {
+export function normalizeCardName(cardName: string): string {
     return cardName
         // Convert diacritics down.
         .normalize('NFD')
