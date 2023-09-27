@@ -1,8 +1,10 @@
-export function parseDecklist(rawDecklist, initialDestination = 'mainboard') {
+import { Card } from './Types';
+
+export function parseDecklist(rawDecklist: string, initialDestination = 'mainboard') {
     let response = {
-        mainboard: [],
-        sideboard: [],
-        errors: [],
+        mainboard: [] as Card[],
+        sideboard: [] as Card[],
+        errors: [] as string[],
     }
 
     let destination = response.mainboard;
@@ -46,13 +48,20 @@ export function parseDecklist(rawDecklist, initialDestination = 'mainboard') {
         let [, quantity, name] = extract;
 
         if (quantity === undefined) {
-            quantity = 1;
+            quantity = '1';
         }
 
-        destination.push({
-            quantity: parseInt(quantity),
-            name: name.trim(),
-        });
+        new Card(
+            name.trim(),
+            parseInt(quantity),
+        )
+
+        destination.push(
+            new Card(
+                name.trim(),
+                parseInt(quantity)
+            )
+        );
     }
 
     return response;

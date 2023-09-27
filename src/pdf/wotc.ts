@@ -1,7 +1,9 @@
-import jsPDF from "jspdf";
-import { parseDecklist } from "../helpers/ParseMagicDecklist.mjs";
+import jsPDF from 'jspdf';
+import { parseDecklist } from '../helpers/ParseMagicDecklist';
+import dcilogo from './img/dcilogo.jpg';
+import { Card, Config, Input } from '../helpers/Types';
 
-export function render(input, config) {
+export function render(input: Input, config: Config) {
     const doc = new jsPDF({
         orientation: 'portrait',
         unit: 'pt',
@@ -27,7 +29,7 @@ export function render(input, config) {
     return doc;
 }
 
-function addBoundingBoxes(doc) {
+function addBoundingBoxes(doc: jsPDF) {
     doc.setLineWidth(1);
     doc.setFillColor(230, 230, 232);
 
@@ -36,7 +38,6 @@ function addBoundingBoxes(doc) {
     doc.rect(355, 54, 221, 72);  // event + deck name + deck designer
     doc.rect(552, 30, 24, 24, 'FD');   // first letter
     doc.rect(445, 30, 55, 24);   // table number
-
 
     doc.rect(27, 140, 24, 628, 'FD');  // last name + first name + dci
     doc.rect(27, 140, 24, 349, 'FD');
@@ -52,9 +53,11 @@ function addBoundingBoxes(doc) {
     doc.rect(320, 722, 260, 12); // official use + main/sb
     doc.rect(320, 734, 260, 12); // dc round + dc round
     doc.rect(320, 746, 260, 12); // status + status
+
+    doc.addImage(dcilogo, 'JPEG', 27, 54, 90, 32);
 }
 
-function addDecklist(doc, mainboard, sideboard) {
+function addDecklist(doc: jsPDF, mainboard: Card[], sideboard: Card[]) {
     doc.setLineWidth(.5);
 
     // Col 1: Mainboard
@@ -153,10 +156,11 @@ function addDecklist(doc, mainboard, sideboard) {
     }
 }
 
-function addSecondaryTextElements(doc,
-    firstName, lastName,
-    eventName, eventLocation, eventDate,
-    deckName, deckDesigner
+function addSecondaryTextElements(
+    doc: jsPDF,
+    firstName: string, lastName: string,
+    eventName: string, eventLocation: string, eventDate: string,
+    deckName: string, deckDesigner: string,
 ) {
     doc.setFontSize(15);
     doc.setFont('times', 'bold'); // it's no Helvetica, that's for sure

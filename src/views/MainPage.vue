@@ -109,16 +109,19 @@
 
             <div class="column col-12">
                 <div class="text-muted text-small text-center">
-                    <p>Built at {{ getBuildTimestamp() }} from <a :href="'https://github.com/haganbmj/decklist/commit/' + getBuildSha()" target="_blank">{{ getBuildSha() }}</a>.</p>
+                    <!-- <p>Built at {{ getBuildTimestamp() }} from <a :href="'https://github.com/haganbmj/decklist/commit/' + getBuildSha()" target="_blank">{{ getBuildSha() }}</a>.</p> -->
                 </div>
             </div>
         </div>
     </div>
 </template>
 
-<script>
+<script lang="ts">
+// TODO: Switch to setup scripts.
 import debounce from 'lodash.debounce';
-import { render } from '../components/wotc.mjs';
+import { render } from '../pdf/index';
+import jsPDF from 'jspdf';
+import { Config, Input } from '../helpers/Types';
 
 export default {
     name: 'MainPage',
@@ -131,7 +134,7 @@ export default {
                 game: '',
                 style: '',
                 sorting: '',
-            },
+            } as Config,
             input: {
                 firstName: '',
                 lastName: '',
@@ -142,14 +145,14 @@ export default {
                 deckDesigner: '',
                 decklist: '',
                 sideboard: '',
-            },
-            cards: [],
-            errors: [],
-            doc: undefined,
+            } as Input,
+            // FIXME: Currently unused as there's no parsing being done on the entries.
+            errors: [] as string[],
+            doc: undefined as jsPDF | undefined,
         }
     },
     computed: {
-        preview: function() {
+        preview: function(): string | undefined {
             return this.doc?.output('dataurlstring');
         }
     },
@@ -192,23 +195,25 @@ export default {
             this.doc = render(this.input, this.config);
         },
         save() {
-            this.doc.save('decklist.pdf');
+            this.doc?.save('decklist.pdf');
         },
         print() {
             // Is there a way to throw it to print dialog?
             // Might be able to invoke a print on the iframe or something.
         },
         getBuildTimestamp() {
+            // return import.meta.env.VITE_BUILD_TIMESTAMP;
             return document.documentElement.dataset.buildTimestamp;
         },
         getBuildSha() {
+            // return import.meta.env.VITE_BUILD_SHA || 'local';
             return document.documentElement.dataset.buildSha || 'local';
         },
     }
 }
 </script>
 
-<style>
+<style lang="postcss">
 .tooltip::after {
     font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
     padding: 0.4rem 0.6rem;
